@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:background="@android:color/background_dark">
+
+
+    <com.xyl.camera.video.view.RoundProgressButton
+        android:id="@+id/capture_progress_button"
+        android:layout_width="@dimen/round_progress_button_size"
+        android:layout_height="@dimen/round_progress_button_size"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/round_progress_button_margin" />
+
+    <TextView
+        android:id="@+id/capture_hint_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/capture_progress_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        android:text="@string/capture_hint"
+        android:textColor="@android:color/white" />
+
+    <ImageButton
+        android:id="@+id/capture_toolbar_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/capture_camera_margin"
+        android:background="@android:drawable/ic_menu_camera" />
+
+    <ImageButton
+        android:id="@+id/capture_toolbar_cancel"
+        android:layout_width="@dimen/capture_confirm_button_size"
+        android:layout_height="@dimen/capture_confirm_button_size"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/capture_confirm_button_margin"
+        android:alpha="0"
+        android:background="@drawable/capture_cancel" />
+
+    <ImageButton
+        android:id="@+id/capture_toolbar_ok"
+        android:layout_width="@dimen/capture_confirm_button_size"
+        android:layout_height="@dimen/capture_confirm_button_size"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/capture_confirm_button_margin"
+        android:alpha="0"
+        android:background="@drawable/capture_ok" />
+</RelativeLayout>

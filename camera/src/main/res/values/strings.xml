@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Camera</string>
+    <string name="capture_hint">轻触拍照，长按摄像</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="round_progress_button_size">100dp</dimen>
+    <dimen name="round_progress_button_margin">10dp</dimen>
+    <dimen name="capture_camera_margin">16dp</dimen>
+    <dimen name="capture_confirm_button_size">48dp</dimen>
+    <dimen name="capture_confirm_button_margin">24dp</dimen>
+</resources>
