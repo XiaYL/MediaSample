@@ -12,7 +12,6 @@ import com.xyl.camera.video.ICaptureListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * author xiayanlei
@@ -176,8 +175,6 @@ public class MediaRecordHelper {
         // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
         if (profile != null) {
-            Log.i(TAG, "prepareVideoRecorder: " + Arrays.asList(
-                    profile.videoFrameWidth, profile.videoFrameHeight));
             profile.videoFrameRate = config.videoFrameRate;
             profile.videoBitRate = config.videoBitRate;
             profile.fileFormat = config.outputFormat;
@@ -248,7 +245,7 @@ public class MediaRecordHelper {
             videoCodec = MediaRecorder.VideoEncoder.H264;
             audioCodec = MediaRecorder.AudioEncoder.AAC;
             videoFrameRate = 15;
-            videoBitRate = 3 * 1024 * 1024;
+            videoBitRate = 1024 * 1024;
         }
 
         public static RecordingConfig get() {

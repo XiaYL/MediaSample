@@ -1,7 +1,9 @@
 package com.xyl.camera.video.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -10,8 +12,10 @@ import android.widget.FrameLayout;
 
 import com.xyl.camera.video.ICaptureListener;
 import com.xyl.camera.video.IMediaListener;
+import com.xyl.camera.video.utils.CameraUtils;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 /**
  * author xiayanlei
@@ -207,8 +211,54 @@ public class CaptureView extends FrameLayout implements ICaptureListener, ICaptu
 
     public void onCaptureResult() {
         if (outFile != null && resultListener != null) {
-            resultListener.onResult(outFile, isVideo);
-            outFile = null;
+            if (isVideo) {//解析视频的第一帧
+                new VideoParserTask(this, outFile.getPath()).execute();
+            } else {
+                Intent intent = new Intent();
+                intent.putExtra(CAPTURE_PATH, outFile.getPath());
+                intent.putExtra(CAPTURE_VIDEO, false);
+                resultListener.onResult(intent);
+            }
+        }
+    }
+
+    private static class VideoParserTask extends AsyncTask<Void, Void, File> {
+
+        private WeakReference<CaptureView> captureViewRef;
+        private String videoPath;
+
+        public VideoParserTask(CaptureView captureView, String videoPath) {
+            captureViewRef = new WeakReference<>(captureView);
+            this.videoPath = videoPath;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (getCaptureView() != null && getCaptureView().resultListener != null) {
+                getCaptureView().resultListener.onStart();
+            }
+        }
+
+        @Override
+        protected File doInBackground(Void... voids) {
+            return CameraUtils.getVideoThumb(getCaptureView().getContext(), videoPath);
+        }
+
+        @Override
+        protected void onPostExecute(File file) {
+            super.onPostExecute(file);
+            Intent intent = new Intent();
+            intent.putExtra(CAPTURE_PATH, videoPath);
+            intent.putExtra(CAPTURE_VIDEO, true);
+            intent.putExtra(CAPTURE_THUMB, file.getPath());
+            if (getCaptureView() != null && getCaptureView().resultListener != null) {
+                getCaptureView().resultListener.onResult(intent);
+            }
+        }
+
+        private CaptureView getCaptureView() {
+            return captureViewRef.get();
         }
     }
 }

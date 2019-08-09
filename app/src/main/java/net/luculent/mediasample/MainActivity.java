@@ -4,9 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.xyl.camera.video.ICaptureListener;
 
 import net.luculent.mediasample.permission.PermissionConstants;
 import net.luculent.mediasample.permission.PermissionHelper;
@@ -60,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            path = data.getStringExtra("path");
-            video = data.getBooleanExtra("video", true);
-            Log.i(TAG, "onActivityResult: " + path + "***" + video);
-            ImageUtils.displayImage(imageView, path);
+            path = data.getStringExtra(ICaptureListener.CAPTURE_PATH);
+            video = data.getBooleanExtra(ICaptureListener.CAPTURE_VIDEO, true);
+            String thumb = data.getStringExtra(ICaptureListener.CAPTURE_THUMB);
+            ImageUtils.displayImage(imageView, video ? thumb : path);
         }
     }
 

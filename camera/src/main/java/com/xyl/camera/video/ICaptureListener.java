@@ -1,5 +1,6 @@
 package com.xyl.camera.video;
 
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.File;
@@ -9,6 +10,10 @@ import java.io.File;
  * date 2019/8/5
  */
 public interface ICaptureListener {
+
+    String CAPTURE_PATH = "capture_path";
+    String CAPTURE_VIDEO = "capture_video";
+    String CAPTURE_THUMB = "capture_thumb";
 
     String TAG = "ICaptureListener";
 
@@ -36,7 +41,10 @@ public interface ICaptureListener {
     }
 
     interface IResultListener {
-        void onResult(File file, boolean isVideo);
+
+        void onStart();
+
+        void onResult(Intent intent);
     }
 
 

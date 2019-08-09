@@ -10,8 +10,6 @@ import com.xyl.camera.video.view.CaptureView;
 
 import net.luculent.mediasample.tools.ActivityUtils;
 
-import java.io.File;
-
 /**
  * author xiayanlei
  * date 2019/8/5
@@ -31,11 +29,14 @@ public class CaptureActivity extends AppCompatActivity {
     private void initView() {
         captureView = findViewById(R.id.capture_view);
         captureView.setResultListener(new ICaptureListener.IResultListener() {
+
             @Override
-            public void onResult(File file, boolean isVideo) {
-                Intent intent = new Intent();
-                intent.putExtra("path", file.getPath());
-                intent.putExtra("video", isVideo);
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onResult(Intent intent) {
                 setResult(RESULT_OK, intent);
                 finish();
             }
