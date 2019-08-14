@@ -16,6 +16,7 @@
 
 package com.xyl.camera.video.utils;
 
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.support.annotation.IntDef;
@@ -30,7 +31,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 
-import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
 import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO;
 
 /**
@@ -108,7 +108,6 @@ public class CameraHelper implements Camera.AutoFocusCallback {
     public void initSize(int viewWidth, int viewHeight) {
         this.viewWidth = viewWidth;
         this.viewHeight = viewHeight;
-        findBestPreviewSize(mCamera);
     }
 
     /**
@@ -118,9 +117,9 @@ public class CameraHelper implements Camera.AutoFocusCallback {
      */
     public void startPreview(SurfaceHolder holder) {
         try {
+            findBestPreviewSize(mCamera);
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
-            mCamera.autoFocus(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -174,8 +173,11 @@ public class CameraHelper implements Camera.AutoFocusCallback {
         if (bestSize != null) {
             Log.i(TAG, "最佳预览尺寸: " + Arrays.toString(new int[]{bestSize.width, bestSize.height}));
             parameters.setPreviewSize(bestSize.width, bestSize.height);
+            parameters.setPictureSize(bestSize.width, bestSize.height);
         }
-        parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_PICTURE);//使用camera的连续自动对焦，需要在第一次对焦成功以后，取消自动对焦
+        parameters.setPictureFormat(ImageFormat.JPEG);
+        parameters.setJpegQuality(100);
+        parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_VIDEO);//使用camera的连续自动对焦，需要在第一次对焦成功以后，取消自动对焦
         camera.setParameters(parameters);
     }
 
@@ -201,9 +203,6 @@ public class CameraHelper implements Camera.AutoFocusCallback {
      * @param duration 拍摄时长
      */
     public void takeVideo(String path, int duration) {
-        Camera.Parameters parameters = mCamera.getParameters();
-        parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_VIDEO);//使用camera的连续自动对焦，需要在第一次对焦成功以后，取消自动对焦
-        mCamera.setParameters(parameters);
         mRecordHelper = new MediaRecordHelper(mCamera);
         if (captureListener != null) {
             mRecordHelper.setRecordListener(captureListener.generateRecorder());
