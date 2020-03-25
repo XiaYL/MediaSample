@@ -17,6 +17,7 @@
 package com.xyl.camera.video.utils;
 
 import android.graphics.ImageFormat;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.support.annotation.IntDef;
@@ -110,15 +111,21 @@ public class CameraHelper implements Camera.AutoFocusCallback {
         this.viewHeight = viewHeight;
     }
 
+
     /**
-     * 开始预览
-     *
-     * @param holder
+     * 开启预览
+     * @param object
      */
-    public void startPreview(SurfaceHolder holder) {
+    public void startPreview(Object object) {
         try {
             findBestPreviewSize(mCamera);
-            mCamera.setPreviewDisplay(holder);
+            if (object instanceof SurfaceTexture) {
+                mCamera.setPreviewTexture((SurfaceTexture) object);
+            } else if (object instanceof SurfaceHolder) {
+                mCamera.setPreviewDisplay((SurfaceHolder) object);
+            } else {
+                throw new IllegalArgumentException("invalid display");
+            }
             mCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,9 +135,9 @@ public class CameraHelper implements Camera.AutoFocusCallback {
     /**
      * 切换摄像头
      *
-     * @param holder
+     * @param object
      */
-    public void switchCamera(SurfaceHolder holder) {
+    public void switchCamera(Object object){
         int newFacing = facing;
         if (facing == FACING_BACK) {
             newFacing = FACING_FRONT;
@@ -144,7 +151,7 @@ public class CameraHelper implements Camera.AutoFocusCallback {
             }
             facing = newFacing;
             open();
-            startPreview(holder);
+            startPreview(object);
         }
     }
 

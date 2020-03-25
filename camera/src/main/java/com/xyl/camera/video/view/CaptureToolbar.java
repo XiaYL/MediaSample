@@ -18,15 +18,16 @@ import java.io.File;
  * author xiayanlei
  * date 2019/8/6
  */
-public class CaptureToolbar extends FrameLayout implements View.OnClickListener, IRoundProgressListener {
+public class CaptureToolbar extends FrameLayout implements View.OnClickListener,
+        IRoundProgressListener {
 
     private View cameraView;
     private View cancelView;
     private View okView;
     private RoundProgressButton progressButton;
     private View hintView;
-
-    private CaptureView captureView;
+    private ICaptureView mCaptureView;
+    private ICaptureListener.IRecordListener mRecordListener;
 
     public CaptureToolbar(@NonNull Context context) {
         this(context, null);
@@ -36,7 +37,8 @@ public class CaptureToolbar extends FrameLayout implements View.OnClickListener,
         this(context, attrs, 0);
     }
 
-    public CaptureToolbar(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public CaptureToolbar(@NonNull Context context, @Nullable AttributeSet attrs, int
+            defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -54,88 +56,87 @@ public class CaptureToolbar extends FrameLayout implements View.OnClickListener,
         cameraView.setOnClickListener(this);
         cancelView.setOnClickListener(this);
         okView.setOnClickListener(this);
+        findViewById(R.id.capture_more_opts).setOnClickListener(this);
     }
 
-    public void bindCaptureView(CaptureView captureView) {
-        this.captureView = captureView;
-        captureView.setCaptureListener(new ICaptureListener() {
-            @Override
-            public void onCaptured(File file) {
+    public void attach(ICaptureView captureView) {
+        mCaptureView = captureView;
+    }
 
-            }
+    protected ICaptureListener.IRecordListener getRecordListener() {
+        if (mRecordListener == null) {
+            mRecordListener = new ICaptureListener.SimpleRecordListener() {
 
-            @Override
-            public IRecordListener generateRecorder() {
-                return new SimpleRecordListener() {
+                @Override
+                public void onRecordProgress(int progress) {
+                    super.onRecordProgress(progress);
+                    progressButton.setProgress(progress);
+                }
 
-                    @Override
-                    public void onRecordProgress(int progress) {
-                        super.onRecordProgress(progress);
-                        progressButton.setProgress(progress);
-                    }
+                @Override
+                public void onRecordFinish(File file) {
+                    super.onRecordFinish(file);
+                    progressButton.endPress();
+                }
 
-                    @Override
-                    public void onRecordFinish(File file) {
-                        super.onRecordFinish(file);
-                        progressButton.endPress();
-                    }
-
-                    @Override
-                    public void onRecordError() {
-                        super.onRecordError();
-                        progressButton.endPress();
-                        resetView();
-                    }
-                };
-            }
-        });
+                @Override
+                public void onRecordError() {
+                    super.onRecordError();
+                    progressButton.endPress();
+                    resetView();
+                }
+            };
+        }
+        return mRecordListener;
     }
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.capture_toolbar_camera) {
-            if (captureView != null) {
-                captureView.switchCamera();
+            if (mCaptureView != null) {
+                mCaptureView.switchCamera();
             }
         } else if (i == R.id.capture_toolbar_cancel) {//取消，返回重新拍摄
-            if (captureView != null) {
-                captureView.onBackPressed();
+            if (mCaptureView != null) {
+                mCaptureView.onBackPressed();
             }
         } else if (i == R.id.capture_toolbar_ok) {//回传拍摄的文件
-            if (captureView != null) {
-                captureView.onCaptureResult();
+            if (mCaptureView != null) {
+                mCaptureView.onCaptureResult();
             }
+        } else if (i == R.id.capture_more_opts) {//暂时做一个添加滤镜的效果
+
         }
     }
 
     @Override
     public void onSingleTap() {
-        if (captureView != null) {
+        if (mCaptureView != null) {
             hintView.setVisibility(GONE);
             String dir = Environment.getExternalStorageDirectory() + "/apidemo/photo/";
             String filename = System.currentTimeMillis() + ".jpg";
             String capturePath = dir.concat(filename);
-            captureView.takePicture(capturePath);
+            mCaptureView.takePicture(capturePath);
         }
     }
 
     @Override
     public void onPressStart() {
-        if (captureView != null) {
+        if (mCaptureView != null) {
             hintView.setVisibility(GONE);
             cameraView.setAlpha(0);
             String dir = Environment.getExternalStorageDirectory() + "/apidemo/video/";
             String filename = System.currentTimeMillis() + ".mp4";
             String capturePath = dir.concat(filename);
-            captureView.takeVideo(capturePath, 15 * 1000);
+            mCaptureView.takeVideo(capturePath, 15 * 1000);
         }
     }
 
     @Override
     public void onPressEnd() {
-        if (captureView != null) {
-            captureView.stopRecord();
+        if (mCaptureView != null) {
+            mCaptureView.stopRecord();
         }
     }
 

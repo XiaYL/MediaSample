@@ -36,6 +36,8 @@
         <activity
             android:name=".MediaPlayActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".GLCaptureActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

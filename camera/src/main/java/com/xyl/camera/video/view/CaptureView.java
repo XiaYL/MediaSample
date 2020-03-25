@@ -21,13 +21,13 @@ import java.lang.ref.WeakReference;
  * author xiayanlei
  * date 2019/8/6
  */
-public class CaptureView extends FrameLayout implements ICaptureListener, ICaptureListener.IRecordListener {
+public class CaptureView extends FrameLayout implements ICaptureView, ICaptureListener,
+        ICaptureListener.IRecordListener {
 
     private FrameLayout surfaceContainer;//拍摄视图容器
     private CameraSurfaceView cameraSurfaceView;//摄像头显示画面
     private PanelSurfaceView panelSurfaceView;//拍照完成以后，自动显示图片
     private MediaSurfaceView mediaSurfaceView;//视频录制完成以后，自动播放视频
-    private ICaptureListener captureListener;
     private IRecordListener recordListener;//视频录制监听
     private CaptureToolbar toolbar;//操作按钮栏
     private IResultListener resultListener;//拍照处理结果
@@ -57,14 +57,8 @@ public class CaptureView extends FrameLayout implements ICaptureListener, ICaptu
 
         toolbar = new CaptureToolbar(context);
         addView(toolbar);
-        toolbar.bindCaptureView(this);
-    }
-
-    public void setCaptureListener(ICaptureListener captureListener) {
-        this.captureListener = captureListener;
-        if (captureListener != null) {
-            recordListener = captureListener.generateRecorder();
-        }
+        toolbar.attach(this);
+        recordListener = toolbar.getRecordListener();
     }
 
     public void setResultListener(IResultListener resultListener) {
@@ -90,8 +84,8 @@ public class CaptureView extends FrameLayout implements ICaptureListener, ICaptu
      * @param path     文件存放位置
      * @param duration 拍摄时长
      */
-    public void takeVideo(String path, int duration) {
-        cameraSurfaceView.takeVideo(path, duration);
+    public void takeVideo(String path, long duration) {
+        cameraSurfaceView.takeVideo(path, (int) duration);
     }
 
     public void stopRecord() {
@@ -102,9 +96,6 @@ public class CaptureView extends FrameLayout implements ICaptureListener, ICaptu
     public void onCaptured(File file) {
         isVideo = false;
         outFile = file;
-        if (captureListener != null) {
-            captureListener.onCaptured(file);
-        }
         addPanelSurface(file);
     }
 

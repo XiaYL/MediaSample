@@ -48,8 +48,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionDenied(String[] permissions, Boolean[] always) {
                         if (permissions.length == 0) {
-                            Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-                            startActivityForResult(intent, REQUEST_CAPTURE);
+//                            Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+//                            startActivityForResult(intent, REQUEST_CAPTURE);
+                            startActivity(new Intent(MainActivity.this,GLCaptureActivity.class));
                         }
                     }
                 })
