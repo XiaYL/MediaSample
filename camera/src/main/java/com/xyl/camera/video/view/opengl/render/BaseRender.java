@@ -9,19 +9,17 @@ import com.xyl.camera.video.view.opengl.drawer.IDrawer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class BaseRender implements GLSurfaceView.Renderer {
+public class BaseRender<T extends IDrawer> implements GLSurfaceView.Renderer {
 
-    protected IDrawer mDrawer;
+    protected T mDrawer;
     protected int mTextureId = -1;
 
-    public BaseRender(IDrawer drawer) {
+    public BaseRender(T drawer) {
         this.mDrawer = drawer;
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        GLES20.glClearColor(0f, 0f, 0f, 0f);//清屏
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         mTextureId = GLHelper.createTextureId();
         mDrawer.attach(mTextureId);
     }
@@ -34,8 +32,16 @@ public class BaseRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        GLES20.glClearColor(0f, 0f, 0f, 0f);//清屏
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         if (mDrawer != null) {
             mDrawer.draw();
+        }
+    }
+
+    public void release() {
+        if (mDrawer != null) {
+            mDrawer.release();
         }
     }
 }

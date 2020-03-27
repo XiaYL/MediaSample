@@ -1,8 +1,14 @@
 package com.xyl.camera.video.view.opengl;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.view.SurfaceHolder;
+
+import com.xyl.camera.video.view.opengl.drawer.CameraDrawer;
+import com.xyl.camera.video.view.opengl.drawer.ICameraDrawer;
+import com.xyl.camera.video.view.opengl.render.CameraRender;
 
 /**
  * author xiayanlei
@@ -10,7 +16,7 @@ import android.util.AttributeSet;
  */
 public class CameraGLSurfaceView extends GLSurfaceView {
 
-    private GLRender mGlRender;
+    private CameraRender mRender;
 
     public CameraGLSurfaceView(Context context) {
         super(context);
@@ -24,7 +30,19 @@ public class CameraGLSurfaceView extends GLSurfaceView {
 
     protected void init() {
         setEGLContextClientVersion(2);//设置egl使用2.0
-        setRenderer(mGlRender = new GLRender(this));
+        ICameraDrawer mDrawer = new CameraDrawer() {
+            @Override
+            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                requestRender();
+            }
+        };
+        setRenderer(mRender = new CameraRender(mDrawer));
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        super.surfaceDestroyed(holder);
+        mRender.release();
     }
 }
