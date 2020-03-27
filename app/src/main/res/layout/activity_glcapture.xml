@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.xyl.camera.video.view.opengl.CameraGLSurfaceView
+    <android.opengl.GLSurfaceView
+        android:id="@+id/gl_surface"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>
