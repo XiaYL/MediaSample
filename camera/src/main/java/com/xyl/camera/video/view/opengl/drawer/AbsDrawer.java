@@ -31,6 +31,10 @@ public abstract class AbsDrawer implements IDrawer {
 
     public AbsDrawer(int vertexCount) {
         this.mVertexCount = vertexCount;
+        init();
+    }
+
+    public void init() {
         mVertexBuffer = initBuffer(getVertexCoors());
         mTextureBuffer = initBuffer(getTextureCoors());
         mTarget = isOES() ? GLES11Ext.GL_TEXTURE_EXTERNAL_OES : GLES20.GL_TEXTURE_2D;
