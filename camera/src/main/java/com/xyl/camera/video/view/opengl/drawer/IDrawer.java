@@ -5,6 +5,8 @@ package com.xyl.camera.video.view.opengl.drawer;
  */
 public interface IDrawer {
 
+    boolean isOES();
+
     void attach(int textureId);
 
     void draw();

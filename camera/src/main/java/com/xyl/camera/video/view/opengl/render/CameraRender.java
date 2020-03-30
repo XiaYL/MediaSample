@@ -1,7 +1,6 @@
 package com.xyl.camera.video.view.opengl.render;
 
 import com.xyl.camera.video.utils.CameraHelper;
-import com.xyl.camera.video.view.opengl.GLHelper;
 import com.xyl.camera.video.view.opengl.drawer.ICameraDrawer;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -18,8 +17,7 @@ public class CameraRender extends BaseRender<ICameraDrawer> {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mTextureId = GLHelper.createOESTextureId();
-        mDrawer.attach(mTextureId);
+        super.onSurfaceCreated(gl, config);
         mCameraHelper.open();
     }
 

@@ -11,7 +11,14 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GLHelper {
 
-    public static int createTextureId() {
+    public static int createTextureId(boolean isOES){
+        if (isOES){
+            return createOESTextureId();
+        }
+        return create2DTextureId();
+    }
+
+    private static int create2DTextureId() {
         int[] textures = new int[1];
         GLES20.glGenTextures(1, textures, 0);//生成一个纹理
         //激活指定纹理单元
@@ -34,7 +41,7 @@ public class GLHelper {
      *
      * @return 外部摄像头纹理
      */
-    public static int createOESTextureId() {
+    private static int createOESTextureId() {
         int[] textures = new int[1];
         GLES20.glGenTextures(1, textures, 0);//生成一个纹理
         //激活指定纹理单元

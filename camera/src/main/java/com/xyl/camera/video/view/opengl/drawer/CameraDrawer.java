@@ -6,9 +6,16 @@ import android.opengl.GLES20;
 /**
  * 视频渲染器
  */
-public abstract class CameraDrawer extends AbsDrawer implements ICameraDrawer, SurfaceTexture.OnFrameAvailableListener {
+public abstract class CameraDrawer extends AbsDrawer implements ICameraDrawer, SurfaceTexture
+        .OnFrameAvailableListener {
 
     private SurfaceTexture mSurfaceTexture;
+    private int mTextureLoc;
+
+    @Override
+    public boolean isOES() {
+        return true;
+    }
 
     @Override
     public String getVertexShaderCode() {
@@ -40,19 +47,7 @@ public abstract class CameraDrawer extends AbsDrawer implements ICameraDrawer, S
         mSurfaceTexture.setOnFrameAvailableListener(this);
     }
 
-    @Override
-    public void draw() {
-        if (mProgram == -1) {
-            return;
-        }
-        //使用OpenGL程序
-        GLES20.glUseProgram(mProgram);
-        drawPrepared();//奇怪的地方,如果将此方法单独抽象出来使用,在子类里面不能显示完整
-        //开始绘制
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-    }
-
-    private void drawPrepared() {
+    public void drawPrepared() {
 
         //更新纹理
         mSurfaceTexture.updateTexImage();
@@ -62,15 +57,17 @@ public abstract class CameraDrawer extends AbsDrawer implements ICameraDrawer, S
         //启用顶点句柄
         GLES20.glEnableVertexAttribArray(mVertexPosHandler);
         //设置坐标数据
-        GLES20.glVertexAttribPointer(mVertexPosHandler, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
+        GLES20.glVertexAttribPointer(mVertexPosHandler, 2, GLES20.GL_FLOAT, false, 0,
+                mVertexBuffer);
 
         mTexturePosHandler = GLES20.glGetAttribLocation(mProgram, "aCoordinate");
         GLES20.glEnableVertexAttribArray(mTexturePosHandler);
-        GLES20.glVertexAttribPointer(mTexturePosHandler, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+        GLES20.glVertexAttribPointer(mTexturePosHandler, 2, GLES20.GL_FLOAT, false, 0,
+                mTextureBuffer);
 
-        mTexturePosHandler = GLES20.glGetUniformLocation(mProgram, "uTexture");
+        mTextureLoc = GLES20.glGetUniformLocation(mProgram, "uTexture");
         //将激活的纹理单元传递到着色器里面
-        GLES20.glUniform1i(mTexturePosHandler, 0);
+        GLES20.glUniform1i(mTextureLoc, 0);
     }
 
     @Override

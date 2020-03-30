@@ -20,7 +20,7 @@ public class BaseRender<T extends IDrawer> implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mTextureId = GLHelper.createTextureId();
+        mTextureId = GLHelper.createTextureId(mDrawer.isOES());
         mDrawer.attach(mTextureId);
     }
 

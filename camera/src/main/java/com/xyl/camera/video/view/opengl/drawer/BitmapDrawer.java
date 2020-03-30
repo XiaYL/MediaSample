@@ -10,6 +10,7 @@ import android.opengl.GLUtils;
  */
 public class BitmapDrawer extends AbsDrawer {
 
+    private int mTextureLoc;
     private Bitmap mBitmap;
 
     public BitmapDrawer(Bitmap bitmap) {
@@ -17,22 +18,10 @@ public class BitmapDrawer extends AbsDrawer {
         mBitmap = bitmap;
     }
 
-    @Override
-    public void draw() {
-        if (mProgram == -1) {
-            return;
-        }
-        //使用OpenGL程序
-        GLES20.glUseProgram(mProgram);
-        drawPrepared();//奇怪的地方,如果将此方法单独抽象出来使用,在子类里面不能显示完整
-        //开始绘制
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-    }
-
     /**
      * 准备数据,有三步操作,获取位置句柄,启用句柄,设置位置数据
      */
-    private void drawPrepared() {
+    public void drawPrepared() {
 
         //更新纹理
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
@@ -42,15 +31,17 @@ public class BitmapDrawer extends AbsDrawer {
         //启用顶点句柄
         GLES20.glEnableVertexAttribArray(mVertexPosHandler);
         //设置坐标数据
-        GLES20.glVertexAttribPointer(mVertexPosHandler, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
+        GLES20.glVertexAttribPointer(mVertexPosHandler, 2, GLES20.GL_FLOAT, false, 0,
+                mVertexBuffer);
 
         mTexturePosHandler = GLES20.glGetAttribLocation(mProgram, "aCoordinate");
         GLES20.glEnableVertexAttribArray(mTexturePosHandler);
-        GLES20.glVertexAttribPointer(mTexturePosHandler, 2, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+        GLES20.glVertexAttribPointer(mTexturePosHandler, 2, GLES20.GL_FLOAT, false, 0,
+                mTextureBuffer);
 
-        mTexturePosHandler = GLES20.glGetUniformLocation(mProgram, "uTexture");
+        mTextureLoc = GLES20.glGetUniformLocation(mProgram, "uTexture");
         //将激活的纹理单元传递到着色器里面
-        GLES20.glUniform1i(mTexturePosHandler, 0);
+        GLES20.glUniform1i(mTextureLoc, 0);
     }
 
     @Override

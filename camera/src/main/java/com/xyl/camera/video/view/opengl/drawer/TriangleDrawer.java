@@ -13,23 +13,14 @@ public class TriangleDrawer extends AbsDrawer {
 
     private int mColorPosHandler;
 
-
-    @Override
-    public void draw() {
-        if (mProgram == -1) {
-            return;
-        }
-        //使用OpenGL程序
-        GLES20.glUseProgram(mProgram);
-        drawPrepared();
-        //开始绘制
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 3);
+    public TriangleDrawer() {
+        super(3);
     }
 
     /**
      * 准备数据,有三步操作,获取位置句柄,启用句柄,设置位置数据
      */
-    private void drawPrepared() {
+    public void drawPrepared() {
         //获取顶点着色器的位置的句柄
         mVertexPosHandler = GLES20.glGetAttribLocation(mProgram, "aPosition");
         //启用顶点句柄

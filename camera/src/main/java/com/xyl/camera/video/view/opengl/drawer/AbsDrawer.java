@@ -1,5 +1,6 @@
 package com.xyl.camera.video.view.opengl.drawer;
 
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
 import com.xyl.camera.video.view.opengl.GLHelper;
@@ -21,10 +22,23 @@ public abstract class AbsDrawer implements IDrawer {
 
     protected FloatBuffer mVertexBuffer;//顶点坐标缓冲区
     protected FloatBuffer mTextureBuffer;//纹理缓冲区
+    protected int mTarget;
+    private int mVertexCount;
 
     public AbsDrawer() {
+        this(4);
+    }
+
+    public AbsDrawer(int vertexCount) {
+        this.mVertexCount = vertexCount;
         mVertexBuffer = initBuffer(getVertexCoors());
         mTextureBuffer = initBuffer(getTextureCoors());
+        mTarget = isOES() ? GLES11Ext.GL_TEXTURE_EXTERNAL_OES : GLES20.GL_TEXTURE_2D;
+    }
+
+    @Override
+    public boolean isOES() {
+        return false;
     }
 
     @Override
@@ -34,10 +48,27 @@ public abstract class AbsDrawer implements IDrawer {
     }
 
     @Override
+    public void draw() {
+        if (mProgram == -1) {
+            return;
+        }
+        //使用OpenGL程序
+        GLES20.glUseProgram(mProgram);
+        //激活指定纹理单元
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(mTarget, mTextureId);//绑定到外部纹理
+        drawPrepared();//奇怪的地方,如果将此方法单独抽象出来使用,在子类里面不能显示完整
+        //开始绘制
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mVertexCount);
+    }
+
+    public abstract void drawPrepared();
+
+    @Override
     public void release() {
         GLES20.glDisableVertexAttribArray(mVertexPosHandler);
         GLES20.glDisableVertexAttribArray(mTexturePosHandler);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindTexture(mTarget, 0);
         GLES20.glDeleteTextures(1, new int[]{mTextureId}, 0);
         GLES20.glDeleteProgram(mProgram);
     }
@@ -49,7 +80,8 @@ public abstract class AbsDrawer implements IDrawer {
         mProgram = GLES20.glCreateProgram();//创建OpenGL程序
         if (mProgram != -1) {
             int vertexShader = GLHelper.loadShader(GLES20.GL_VERTEX_SHADER, getVertexShaderCode());
-            int fragmentShader = GLHelper.loadShader(GLES20.GL_FRAGMENT_SHADER, getFragmentShaderCode());
+            int fragmentShader = GLHelper.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                    getFragmentShaderCode());
 
             GLES20.glAttachShader(mProgram, vertexShader);//加载着色器到程序
             GLES20.glAttachShader(mProgram, fragmentShader);
