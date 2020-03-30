@@ -2,6 +2,7 @@ package com.xyl.camera.video.view.opengl.drawer;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 /**
  * 视频渲染器
@@ -9,35 +10,17 @@ import android.opengl.GLES20;
 public abstract class CameraDrawer extends AbsDrawer implements ICameraDrawer, SurfaceTexture
         .OnFrameAvailableListener {
 
+    private static final int GL_MATRIX_SIZE = 16;
     private SurfaceTexture mSurfaceTexture;
-    private int mTextureLoc;
+
+    private float[] mMVPMatrix = new float[GL_MATRIX_SIZE];
+    private float[] mSTMatrix = new float[GL_MATRIX_SIZE];
+    private int muMVPMatrixHandle;
+    private int muSTMatrixHandle;
 
     @Override
     public boolean isOES() {
         return true;
-    }
-
-    @Override
-    public String getVertexShaderCode() {
-        return "attribute vec4 aPosition;" +//顶点坐标
-                "attribute vec2 aCoordinate;" +//纹理坐标
-                "varying vec2 vCoordinate;" +//用于传递纹理坐标给片元着色器，命名和片元着色器中的一致
-                "void main() {" +
-                "  gl_Position = aPosition;" +
-                "  vCoordinate = aCoordinate;" +
-                "}";
-    }
-
-    @Override
-    public String getFragmentShaderCode() {//视频画面的渲染使用的是Android的拓展纹理
-        //一定要加换行"\n"，否则会和下一行的precision混在一起，导致编译出错
-        return "#extension GL_OES_EGL_image_external : require\n" +
-                "precision mediump float;" +
-                "varying vec2 vCoordinate;" +
-                "uniform samplerExternalOES uTexture;" +//拓展纹理单元
-                "void main() {" +
-                "  gl_FragColor=texture2D(uTexture, vCoordinate);" +
-                "}";
     }
 
     @Override
@@ -48,6 +31,9 @@ public abstract class CameraDrawer extends AbsDrawer implements ICameraDrawer, S
     }
 
     public void drawPrepared() {
+
+        mSurfaceTexture.getTransformMatrix(mSTMatrix);
+        Matrix.setIdentityM(mMVPMatrix, 0);
 
         //更新纹理
         mSurfaceTexture.updateTexImage();
@@ -65,13 +51,41 @@ public abstract class CameraDrawer extends AbsDrawer implements ICameraDrawer, S
         GLES20.glVertexAttribPointer(mTexturePosHandler, 2, GLES20.GL_FLOAT, false, 0,
                 mTextureBuffer);
 
-        mTextureLoc = GLES20.glGetUniformLocation(mProgram, "uTexture");
-        //将激活的纹理单元传递到着色器里面
-        GLES20.glUniform1i(mTextureLoc, 0);
+        muMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+
+        muSTMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uSTMatrix");
+        GLES20.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0);
     }
 
     @Override
     public SurfaceTexture getSurfaceTexture() {
         return mSurfaceTexture;
     }
+
+    @Override
+    public String getVertexShaderCode() {
+        return "uniform mat4 uMVPMatrix;" +
+                "uniform mat4 uSTMatrix;" +
+                "attribute vec4 aPosition;" +//顶点坐标
+                "attribute vec4 aCoordinate;" +//纹理坐标
+                "varying vec2 vCoordinate;" +//用于传递纹理坐标给片元着色器，命名和片元着色器中的一致
+                "void main() {" +
+                "  gl_Position = uMVPMatrix * aPosition;" +
+                "  vCoordinate = (uSTMatrix * aCoordinate).xy;" +
+                "}";
+    }
+
+    @Override
+    public String getFragmentShaderCode() {//视频画面的渲染使用的是Android的拓展纹理
+        //一定要加换行"\n"，否则会和下一行的precision混在一起，导致编译出错
+        return "#extension GL_OES_EGL_image_external : require\n" +
+                "precision mediump float;" +
+                "varying vec2 vCoordinate;" +
+                "uniform samplerExternalOES uTexture;" +//拓展纹理单元
+                "void main() {" +
+                "  gl_FragColor=texture2D(uTexture, vCoordinate);" +
+                "}";
+    }
+
 }

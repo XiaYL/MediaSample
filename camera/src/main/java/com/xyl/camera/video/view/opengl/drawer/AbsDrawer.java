@@ -10,8 +10,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 /**
- * 世界坐标系:原点在中间,区间为(-1,1)
- * 纹理坐标系:原点在左上角,区间为(0,1)
+ * 世界坐标系:原点在中间,区间为(-1,1),最终需要做垂直翻转
+ * 纹理坐标系:原点在左下角,区间为(0,1)
  */
 public abstract class AbsDrawer implements IDrawer {
 
@@ -128,10 +128,10 @@ public abstract class AbsDrawer implements IDrawer {
      */
     public float[] getTextureCoors() {
         return new float[]{
-                0f, 1f,
-                1f, 1f,
                 0f, 0f,
-                1f, 0f
+                1f, 0f,
+                0f, 1f,
+                1f, 1f
         };
     }
 
