@@ -12,4 +12,6 @@ public interface IDrawer {
     void draw();
 
     void release();
+
+    void onSurfaceChanged(int w, int h);
 }

@@ -6,6 +6,8 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
+import com.xyl.camera.video.view.opengl.GLHelper;
+
 /**
  * 图片绘制
  */
@@ -16,6 +18,7 @@ public class BitmapDrawer extends StandardDrawer {
     public BitmapDrawer(Bitmap bitmap) {
         super();
         mBitmap = bitmap;
+        onObjectChanged(mBitmap.getWidth(), mBitmap.getHeight());
     }
 
     @Override
@@ -29,6 +32,10 @@ public class BitmapDrawer extends StandardDrawer {
      */
     @Override
     public void drawPrepared() {
+        mPrjMatrix = getProjectionMatrix(mPrjMatrix);
+        float[] resultMatrix = GLHelper.generateStandMatrix();
+        Matrix.multiplyMM(resultMatrix, 0, mMVPMatrix, 0, mPrjMatrix, 0);
+        mMVPMatrix = resultMatrix;
         //更新纹理
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
         super.drawPrepared();

@@ -15,6 +15,9 @@ import java.nio.FloatBuffer;
  */
 public abstract class AbsDrawer implements IDrawer {
 
+    protected int mSurfaceWidth = 0;//画布宽度
+    protected int mSurfaceHeight = 0;//画布高度
+
     protected int mTextureId = -1;//纹理id
     protected int mProgram = -1;//程序id
     protected int mVertexPosHandler;//顶点坐标接受者
@@ -75,6 +78,12 @@ public abstract class AbsDrawer implements IDrawer {
         GLES20.glBindTexture(mTarget, 0);
         GLES20.glDeleteTextures(1, new int[]{mTextureId}, 0);
         GLES20.glDeleteProgram(mProgram);
+    }
+
+    @Override
+    public void onSurfaceChanged(int w, int h) {
+        this.mSurfaceWidth = w;
+        this.mSurfaceHeight = h;
     }
 
     /**

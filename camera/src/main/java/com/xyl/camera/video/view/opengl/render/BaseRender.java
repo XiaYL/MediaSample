@@ -28,6 +28,7 @@ public class BaseRender<T extends IDrawer> implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         // 设置OpenGL场景的大小,(0,0)表示窗口内部视口的左下角，(w,h)指定了视口的大小
         GLES20.glViewport(0, 0, width, height);
+        mDrawer.onSurfaceChanged(width,height);
     }
 
     @Override

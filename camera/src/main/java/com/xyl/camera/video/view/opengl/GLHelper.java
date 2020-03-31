@@ -2,6 +2,7 @@ package com.xyl.camera.video.view.opengl;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -11,8 +12,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GLHelper {
 
-    public static int createTextureId(boolean isOES){
-        if (isOES){
+    public static int createTextureId(boolean isOES) {
+        if (isOES) {
             return createOESTextureId();
         }
         return create2DTextureId();
@@ -38,7 +39,6 @@ public class GLHelper {
     }
 
     /**
-     *
      * @return 外部摄像头纹理
      */
     private static int createOESTextureId() {
@@ -65,5 +65,11 @@ public class GLHelper {
         GLES20.glShaderSource(shader, shaderCode);//加载着色器
         GLES20.glCompileShader(shader);//编译着色器
         return shader;
+    }
+
+    public static float[] generateStandMatrix() {
+        float[] matrix = new float[16];
+        Matrix.setIdentityM(matrix, 0);
+        return matrix;
     }
 }
