@@ -32,10 +32,10 @@ public class BitmapDrawer extends StandardDrawer {
      */
     @Override
     public void drawPrepared() {
-        mPrjMatrix = getProjectionMatrix(mPrjMatrix);
-        float[] resultMatrix = GLHelper.generateStandMatrix();
-        Matrix.multiplyMM(resultMatrix, 0, mMVPMatrix, 0, mPrjMatrix, 0);
-        mMVPMatrix = resultMatrix;
+        float[] mPrjMatrix = getProjectionMatrix();
+        float[] scaleMatrix = GLHelper.generateStandMatrix();
+        Matrix.scaleM(scaleMatrix, 0, 1, -1, 1);//垂直翻转矩阵
+        Matrix.multiplyMM(mMVPMatrix, 0, scaleMatrix, 0, mPrjMatrix, 0);
         //更新纹理
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
         super.drawPrepared();

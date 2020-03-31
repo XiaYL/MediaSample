@@ -3,8 +3,11 @@ package com.xyl.camera.video.view.opengl.drawer;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.xyl.camera.video.view.opengl.GLHelper;
+
+import java.util.Arrays;
 
 /**
  * 世界坐标系:原点在中间,区间为(-1,1)
@@ -14,7 +17,6 @@ public abstract class StandardDrawer extends AbsDrawer implements IStandardDrawe
 
     protected float[] mMVPMatrix;//标准坐标变换矩阵
     protected float[] mSTMatrix;//纹理坐标变换矩阵
-    protected float[] mPrjMatrix;//正交矩阵
     protected int muMVPMatrixHandle;
     protected int muSTMatrixHandle;
     protected int mObjectWidth;//真实的宽度
@@ -25,7 +27,6 @@ public abstract class StandardDrawer extends AbsDrawer implements IStandardDrawe
         super.init();
         mMVPMatrix = GLHelper.generateStandMatrix();
         mSTMatrix = GLHelper.generateStandMatrix();
-        mPrjMatrix = GLHelper.generateStandMatrix();
     }
 
     @Override
@@ -79,7 +80,8 @@ public abstract class StandardDrawer extends AbsDrawer implements IStandardDrawe
     /**
      * @return 正交投影矩阵
      */
-    public float[] getProjectionMatrix(float[] prjMatrix) {
+    public float[] getProjectionMatrix() {
+        float[] prjMatrix = GLHelper.generateStandMatrix();
         if (mSurfaceWidth <= 0 || mSurfaceHeight <= 0 || mObjectWidth <= 0 || mObjectHeight <= 0) {
             return prjMatrix;
         }
@@ -103,6 +105,7 @@ public abstract class StandardDrawer extends AbsDrawer implements IStandardDrawe
                     -1f, 1f
             );
         }
+        Log.i("abc", "getProjectionMatrix: " + Arrays.toString(prjMatrix));
         return prjMatrix;
     }
 }
