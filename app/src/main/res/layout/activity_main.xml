@@ -11,6 +11,11 @@
         android:layout_height="wrap_content"
         android:onClick="startCapture"
         android:text="拍摄" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startAudio"
+        android:text="音频"/>
 
     <ImageView
         android:id="@+id/capture_result"

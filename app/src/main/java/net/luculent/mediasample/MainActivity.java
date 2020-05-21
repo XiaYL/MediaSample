@@ -59,6 +59,24 @@ public class MainActivity extends AppCompatActivity {
         ;
     }
 
+    public void startAudio(View view) {
+        PermissionHelper.getInstance()
+                .permissions(
+                        PermissionConstants.MICROPHONE,
+                        PermissionConstants.STORAGE
+                        )
+                .callback(new PermissionHelper.SimplePermissionCallback() {
+                    @Override
+                    public void onPermissionDenied(String[] permissions, Boolean[] always) {
+                        if (permissions.length == 0) {
+                            Intent intent = new Intent(MainActivity.this, AudioActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .check(this);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

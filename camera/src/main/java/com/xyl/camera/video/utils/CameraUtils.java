@@ -61,10 +61,15 @@ public class CameraUtils {
         if (file.exists()) {
             file.delete();
         }
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return file;
     }
 
-    private static boolean isMainThread() {
+    public static boolean isMainThread() {
         return Looper.myLooper() == Looper.getMainLooper();
     }
 

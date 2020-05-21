@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ToggleButton
+        android:id="@+id/audio_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOff="开始录音"
+        android:textOn="停止录音" />
+
+    <ToggleButton
+        android:id="@+id/audio_track"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOff="播放录音"
+        android:textOn="播放结束" />
+
+    <Button
+        android:id="@+id/audio_encode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PCM转WAV" />
+</LinearLayout>

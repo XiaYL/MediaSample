@@ -44,6 +44,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".GLCaptureActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".AudioActivity" />
     </application>
 
 </manifest>
