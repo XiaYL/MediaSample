@@ -42,15 +42,16 @@ public class MainActivity extends AppCompatActivity {
                 .permissions(
                         PermissionConstants.MICROPHONE,
                         PermissionConstants.CAMERA,
-                        PermissionConstants.STORAGE
+                        PermissionConstants.STORAGE,
+                        PermissionConstants.PHONE
                 )
                 .callback(new PermissionHelper.SimplePermissionCallback() {
                     @Override
                     public void onPermissionDenied(String[] permissions, Boolean[] always) {
                         if (permissions.length == 0) {
-//                            Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-//                            startActivityForResult(intent, REQUEST_CAPTURE);
-                            startActivity(new Intent(MainActivity.this,GLCaptureActivity.class));
+                            Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+                            startActivityForResult(intent, REQUEST_CAPTURE);
+//                            startActivity(new Intent(MainActivity.this,GLCaptureActivity.class));
                         }
                     }
                 })

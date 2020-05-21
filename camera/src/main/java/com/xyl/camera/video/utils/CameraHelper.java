@@ -114,6 +114,7 @@ public class CameraHelper implements Camera.AutoFocusCallback {
 
     /**
      * 开启预览
+     *
      * @param object
      */
     public void startPreview(Object object) {
@@ -137,7 +138,7 @@ public class CameraHelper implements Camera.AutoFocusCallback {
      *
      * @param object
      */
-    public void switchCamera(Object object){
+    public void switchCamera(Object object) {
         int newFacing = facing;
         if (facing == FACING_BACK) {
             newFacing = FACING_FRONT;
@@ -162,30 +163,48 @@ public class CameraHelper implements Camera.AutoFocusCallback {
      */
     private void findBestPreviewSize(Camera camera) {
         float targetRatio = 1.0f * viewHeight / viewWidth;//因为是竖屏
-        float minDiff = targetRatio;
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
-        Camera.Size bestSize = null;
-        for (Camera.Size previewSize : previewSizes) {
-            if (previewSize.width == viewWidth && previewSize.height == viewHeight) {
-                bestSize = previewSize;
-                break;
-            }
-            float supportedRatio = 1.0f * previewSize.width / previewSize.height;
-            if (Math.abs(supportedRatio - targetRatio) < minDiff) {
-                minDiff = Math.abs(supportedRatio - targetRatio);
-                bestSize = previewSize;
-            }
-        }
+        Camera.Size bestSize = findBestSize(previewSizes, targetRatio);
         if (bestSize != null) {
             Log.i(TAG, "最佳预览尺寸: " + Arrays.toString(new int[]{bestSize.width, bestSize.height}));
-            parameters.setPreviewSize(bestSize.width, bestSize.height);
-            parameters.setPictureSize(bestSize.width, bestSize.height);
+            try {
+                parameters.setPreviewSize(bestSize.width, bestSize.height);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        previewSizes = parameters.getSupportedPictureSizes();
+        bestSize = findBestSize(previewSizes, targetRatio);
+        if (bestSize != null) {
+            Log.i(TAG, "最佳图片尺寸: " + Arrays.toString(new int[]{bestSize.width, bestSize.height}));
+            try {
+                parameters.setPictureSize(bestSize.width, bestSize.height);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         parameters.setPictureFormat(ImageFormat.JPEG);
         parameters.setJpegQuality(100);
         parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_VIDEO);//使用camera的连续自动对焦，需要在第一次对焦成功以后，取消自动对焦
         camera.setParameters(parameters);
+    }
+
+    private Camera.Size findBestSize(List<Camera.Size> sizes, float targetRatio) {
+        float minDiff = targetRatio;
+        Camera.Size bestSize = null;
+        for (Camera.Size size : sizes) {
+            if (size.width == viewWidth && size.height == viewHeight) {
+                bestSize = size;
+                break;
+            }
+            float supportedRatio = 1.0f * size.width / size.height;
+            if (Math.abs(supportedRatio - targetRatio) < minDiff) {
+                minDiff = Math.abs(supportedRatio - targetRatio);
+                bestSize = size;
+            }
+        }
+        return bestSize;
     }
 
     /**

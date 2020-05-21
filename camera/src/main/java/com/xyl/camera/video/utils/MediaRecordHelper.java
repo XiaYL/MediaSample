@@ -175,8 +175,8 @@ public class MediaRecordHelper {
         // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
         if (profile != null) {
-            profile.videoFrameRate = config.videoFrameRate;
-            profile.videoBitRate = config.videoBitRate;
+//            profile.videoFrameRate = config.videoFrameRate;//部分机型出错，如果设置不支持的参数，会导致录制失败
+//            profile.videoBitRate = config.videoBitRate;
             profile.fileFormat = config.outputFormat;
             profile.videoCodec = config.videoCodec;
             profile.audioCodec = config.audioCodec;
