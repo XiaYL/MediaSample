@@ -12,6 +12,8 @@ import com.xyl.camera.video.ICaptureListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * author xiayanlei
@@ -30,6 +32,8 @@ public class MediaRecordHelper {
     private File mOutputFile;
     private ICaptureListener.IRecordListener recordListener;
     private boolean isRecording;
+    private int viewWidth;//视图宽度
+    private int viewHeight;//控件高度
 
     //计时器，到指定的时间结束录制
     private CountDownTimer countDownTimer;
@@ -37,6 +41,17 @@ public class MediaRecordHelper {
     public MediaRecordHelper(@NonNull Camera mCamera) {
         this.mCamera = mCamera;
         parameters = mCamera.getParameters();
+    }
+
+    /**
+     * 设置相机参数
+     *
+     * @param viewWidth
+     * @param viewHeight
+     */
+    public void initSize(int viewWidth, int viewHeight) {
+        this.viewWidth = viewWidth;
+        this.viewHeight = viewHeight;
     }
 
     public void setRecordListener(ICaptureListener.IRecordListener recordListener) {
@@ -83,7 +98,8 @@ public class MediaRecordHelper {
     }
 
     /**
-     * Asynchronous task for preparing the {@link android.media.MediaRecorder} since it's a long blocking
+     * Asynchronous task for preparing the {@link android.media.MediaRecorder} since it's a long
+     * blocking
      * operation.
      */
     class MediaPrepareTask extends AsyncTask<Void, Void, Boolean> {
@@ -167,24 +183,27 @@ public class MediaRecordHelper {
         mMediaRecorder.setOrientationHint(rotation);//设置视频数据旋转矩阵
 
         // Use the same size for recording profile.
-        Camera.Size previewSize = parameters.getPreviewSize();
         RecordingConfig config = RecordingConfig.get();
-        config.videoFrameWidth = previewSize.width;
-        config.videoFrameHeight = previewSize.height;
 
         // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
         CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
         if (profile != null) {
 //            profile.videoFrameRate = config.videoFrameRate;//部分机型出错，如果设置不支持的参数，会导致录制失败
-//            profile.videoBitRate = config.videoBitRate;
+            profile.videoBitRate = config.videoBitRate;
             profile.fileFormat = config.outputFormat;
             profile.videoCodec = config.videoCodec;
             profile.audioCodec = config.audioCodec;
             mMediaRecorder.setProfile(profile);
         } else {
+            List<Camera.Size> previewSizes = parameters.getSupportedVideoSizes();
+            Camera.Size previewSize = CameraUtils.findBestSize(previewSizes, viewWidth, viewHeight);
+            if (previewSize == null) {
+                previewSize = parameters.getPreviewSize();
+            }
+            Log.i(TAG, "视频最佳尺寸: " + Arrays.toString(new int[]{previewSize.width, previewSize.height}));
             mMediaRecorder.setOutputFormat(config.outputFormat);
-            mMediaRecorder.setVideoFrameRate(config.videoFrameRate);
-            mMediaRecorder.setVideoSize(config.videoFrameWidth, config.videoFrameHeight);
+//            mMediaRecorder.setVideoFrameRate(config.videoFrameRate);
+            mMediaRecorder.setVideoSize(previewSize.width, previewSize.height);
             mMediaRecorder.setVideoEncodingBitRate(config.videoBitRate);
             mMediaRecorder.setVideoEncoder(config.videoCodec);
             mMediaRecorder.setAudioEncoder(config.audioCodec);
@@ -245,7 +264,7 @@ public class MediaRecordHelper {
             videoCodec = MediaRecorder.VideoEncoder.H264;
             audioCodec = MediaRecorder.AudioEncoder.AAC;
             videoFrameRate = 15;
-            videoBitRate = 1024 * 1024;
+            videoBitRate = 3 * 1024 * 1024;
         }
 
         public static RecordingConfig get() {

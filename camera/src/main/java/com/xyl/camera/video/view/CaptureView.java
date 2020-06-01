@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -71,21 +72,22 @@ public class CaptureView extends FrameLayout implements ICaptureView, ICaptureLi
 
     /**
      * 拍照
-     *
-     * @param path
      */
-    public void takePicture(final String path) {
-        cameraSurfaceView.takePicture(path);
+    public void takePicture() {
+        String dir = Environment.getExternalStorageDirectory() + "/apidemo/photo/";
+        String filename = System.currentTimeMillis() + ".jpg";
+        String capturePath = dir.concat(filename);
+        cameraSurfaceView.takePicture(capturePath);
     }
 
     /**
      * 拍摄视频
-     *
-     * @param path     文件存放位置
-     * @param duration 拍摄时长
      */
-    public void takeVideo(String path, long duration) {
-        cameraSurfaceView.takeVideo(path, (int) duration);
+    public void takeVideo() {
+        String dir = Environment.getExternalStorageDirectory() + "/apidemo/video/";
+        String filename = System.currentTimeMillis() + ".mp4";
+        String capturePath = dir.concat(filename);
+        cameraSurfaceView.takeVideo(capturePath, 15 * 1000);
     }
 
     public void stopRecord() {

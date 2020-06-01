@@ -66,6 +66,7 @@ public class AudioActivity extends AppCompatActivity implements CompoundButton
             AudioTrackHelper.get().stop();
         }
     }
+    
 
     @Override
     public void onClick(final View v) {

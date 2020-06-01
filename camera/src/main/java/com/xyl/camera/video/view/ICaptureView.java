@@ -12,9 +12,9 @@ public interface ICaptureView {
 
     void onCaptureResult();
 
-    void takePicture(String capturePath);
+    void takePicture();
 
-    void takeVideo(String capturePath, long duration);
+    void takeVideo();
 
     void stopRecord();
 }

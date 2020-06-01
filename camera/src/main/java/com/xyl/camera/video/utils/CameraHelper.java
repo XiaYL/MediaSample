@@ -162,10 +162,9 @@ public class CameraHelper implements Camera.AutoFocusCallback {
      * @param camera
      */
     private void findBestPreviewSize(Camera camera) {
-        float targetRatio = 1.0f * viewHeight / viewWidth;//因为是竖屏
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
-        Camera.Size bestSize = findBestSize(previewSizes, targetRatio);
+        Camera.Size bestSize = CameraUtils.findBestSize(previewSizes, viewWidth, viewHeight);
         if (bestSize != null) {
             Log.i(TAG, "最佳预览尺寸: " + Arrays.toString(new int[]{bestSize.width, bestSize.height}));
             try {
@@ -175,7 +174,7 @@ public class CameraHelper implements Camera.AutoFocusCallback {
             }
         }
         previewSizes = parameters.getSupportedPictureSizes();
-        bestSize = findBestSize(previewSizes, targetRatio);
+        bestSize = CameraUtils.findBestSize(previewSizes, viewWidth, viewHeight);
         if (bestSize != null) {
             Log.i(TAG, "最佳图片尺寸: " + Arrays.toString(new int[]{bestSize.width, bestSize.height}));
             try {
@@ -188,23 +187,6 @@ public class CameraHelper implements Camera.AutoFocusCallback {
         parameters.setJpegQuality(100);
         parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_VIDEO);//使用camera的连续自动对焦，需要在第一次对焦成功以后，取消自动对焦
         camera.setParameters(parameters);
-    }
-
-    private Camera.Size findBestSize(List<Camera.Size> sizes, float targetRatio) {
-        float minDiff = targetRatio;
-        Camera.Size bestSize = null;
-        for (Camera.Size size : sizes) {
-            if (size.width == viewWidth && size.height == viewHeight) {
-                bestSize = size;
-                break;
-            }
-            float supportedRatio = 1.0f * size.width / size.height;
-            if (Math.abs(supportedRatio - targetRatio) < minDiff) {
-                minDiff = Math.abs(supportedRatio - targetRatio);
-                bestSize = size;
-            }
-        }
-        return bestSize;
     }
 
     /**
@@ -229,7 +211,10 @@ public class CameraHelper implements Camera.AutoFocusCallback {
      * @param duration 拍摄时长
      */
     public void takeVideo(String path, int duration) {
-        mRecordHelper = new MediaRecordHelper(mCamera);
+        if (mRecordHelper == null) {
+            mRecordHelper = new MediaRecordHelper(mCamera);
+            mRecordHelper.initSize(viewWidth, viewHeight);
+        }
         if (captureListener != null) {
             mRecordHelper.setRecordListener(captureListener.generateRecorder());
         }

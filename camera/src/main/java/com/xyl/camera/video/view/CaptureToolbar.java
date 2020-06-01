@@ -1,7 +1,6 @@
 package com.xyl.camera.video.view;
 
 import android.content.Context;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -114,10 +113,7 @@ public class CaptureToolbar extends FrameLayout implements View.OnClickListener,
     public void onSingleTap() {
         if (mCaptureView != null) {
             hintView.setVisibility(GONE);
-            String dir = Environment.getExternalStorageDirectory() + "/apidemo/photo/";
-            String filename = System.currentTimeMillis() + ".jpg";
-            String capturePath = dir.concat(filename);
-            mCaptureView.takePicture(capturePath);
+            mCaptureView.takePicture();
         }
     }
 
@@ -126,10 +122,7 @@ public class CaptureToolbar extends FrameLayout implements View.OnClickListener,
         if (mCaptureView != null) {
             hintView.setVisibility(GONE);
             cameraView.setAlpha(0);
-            String dir = Environment.getExternalStorageDirectory() + "/apidemo/video/";
-            String filename = System.currentTimeMillis() + ".mp4";
-            String capturePath = dir.concat(filename);
-            mCaptureView.takeVideo(capturePath, 15 * 1000);
+            mCaptureView.takeVideo();
         }
     }
 
